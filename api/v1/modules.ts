@@ -13,7 +13,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     auth.tenantId,
     async (tx: any) => {
       return tx.module.findMany({
-        where: { isActive: true },
+        // Explicit tenantId filter: PAIR_ADMIN sessions disable RLS via the
+        // is_admin GUC, so without this, admins see modules from every tenant.
+        where: { tenantId: auth.tenantId, isActive: true },
         select: { id: true, slug: true, label: true, icon: true },
         orderBy: { createdAt: "asc" },
       });

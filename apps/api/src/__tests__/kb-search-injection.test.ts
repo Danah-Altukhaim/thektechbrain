@@ -18,7 +18,7 @@ describe("kb /search injection resistance", () => {
   let tenantA: string;
 
   beforeAll(async () => {
-    const a = await adminPrisma.tenant.findUnique({ where: { slug: "cinescape" } });
+    const a = await adminPrisma.tenant.findUnique({ where: { slug: "ktech" } });
     if (!a) throw new Error("Run `pnpm seed` first");
     tenantA = a.id;
   });

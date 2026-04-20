@@ -23,7 +23,7 @@ describe("RLS cross-tenant isolation", () => {
   let tenantB: string;
 
   beforeAll(async () => {
-    const a = await adminPrisma.tenant.findUnique({ where: { slug: "cinescape" } });
+    const a = await adminPrisma.tenant.findUnique({ where: { slug: "ktech" } });
     if (!a) throw new Error("Run `pnpm seed` first");
     tenantA = a.id;
 

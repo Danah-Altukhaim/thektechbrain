@@ -184,7 +184,7 @@ export async function parseUtterance(input: ParserInput): Promise<ParserResult> 
   // Cache-heavy blocks ordered static → dynamic:
   // 1) system instructions (cached)
   // 2) module schemas (cached)
-  // 3) brand glossary + Cinescape tone (cached)
+  // 3) brand glossary + KTech tone (cached)
   // 4) recent entries + session summary (dynamic)
   const systemBlocks = [
     {
@@ -199,7 +199,7 @@ export async function parseUtterance(input: ParserInput): Promise<ParserResult> 
     },
     {
       type: "text",
-      text: "BRAND GLOSSARY (EN→AR): Cinescape → سينسكيب; Kuwait National Cinema Company → شركة السينما الكويتية الوطنية; cinema → دار العرض; showtime → موعد العرض; seat → مقعد; booking → حجز; refund → استرجاع; electronic balance → رصيد إلكتروني; Club Card → بطاقة الولاء. TONE: clear, courteous, cinema-savvy. Kuwait market context (KWD currency, MOI age ratings).",
+      text: "BRAND GLOSSARY (EN→AR): KTech → كي تك; Kuwait Technical College → الكلية الكويتية التقنية; course → كورس; lecture → محاضرة; exam → اختبار; midterm → ميدتيرم; final → فاينل; attendance → حضور; absence → غياب; registration → تسجيل; scholarship → بعثة; advisor → مرشد أكاديمي; transcript → كشف درجات; semester → فصل دراسي. TONE: clear, courteous, academic. Kuwait higher-education context.",
       cache_control: { type: "ephemeral" },
     },
   ] as unknown as Anthropic.Messages.TextBlockParam[];

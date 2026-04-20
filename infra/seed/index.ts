@@ -61,12 +61,48 @@ async function issueApiKey(tenantId: string, slug: string) {
   console.log(`Seeded ${slug}: api_key = ${raw}`);
 }
 
+// Module slugs from the pre-rebrand Cinescape fixture set. Seed runs on every
+// deploy, so dropping these here guarantees stale Knowledge cards (e.g.
+// "Cinemas & Hours", "Active Offers") disappear without a manual SQL step.
+const LEGACY_MODULE_SLUGS = [
+  "branches",
+  "escalation_rules",
+  "faqs",
+  "intents",
+  "partners",
+  "policy_matrix",
+  "promotions",
+];
+
+async function purgeLegacyTenants() {
+  // Pre-rebrand databases still carry an orphaned 'cinescape' tenant. Its
+  // modules surface in admin sessions (RLS bypass), causing duplicate cards
+  // on the Knowledge page. Cascades clear modules/entries/sessions.
+  const stale = await prisma.tenant.findUnique({ where: { slug: "cinescape" } });
+  if (stale) {
+    await prisma.tenant.delete({ where: { slug: "cinescape" } });
+    console.log("Purged legacy 'cinescape' tenant");
+  }
+}
+
 async function seedKtech() {
+  await purgeLegacyTenants();
+
   const tenant = await prisma.tenant.upsert({
     where: { slug: "ktech" },
     create: { slug: "ktech", name: "KTech", timezone: "Asia/Kuwait" },
     update: {},
   });
+
+  // Drop legacy cinescape modules that may have been seeded under the
+  // 'ktech' tenant before the rebrand. Cascades clear their entries.
+  const removed = await prisma.module.deleteMany({
+    where: { tenantId: tenant.id, slug: { in: LEGACY_MODULE_SLUGS } },
+  });
+  if (removed.count > 0) {
+    console.log(`Removed ${removed.count} legacy modules from 'ktech' tenant`);
+  }
+
   const { editor } = await upsertTenantUsers(tenant.id);
 
   const moduleIdBySlug = new Map<string, string>();

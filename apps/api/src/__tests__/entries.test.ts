@@ -11,17 +11,17 @@
  *  - rollback restores the prior snapshot and bumps version counter
  *  - unknown module slug returns 404
  *
- * Seed dependency: `pnpm seed` must have run; uses the `cinescape` tenant,
- * `ibrahim@example.com` / `password1`, and the `faqs` module.
+ * Seed dependency: `pnpm seed` must have run; uses the `ktech` tenant,
+ * `ibrahim@example.com` / `password1`, and the `student-services` module.
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { FastifyInstance } from "fastify";
 import { buildApp } from "../server.js";
 
-const TENANT = "cinescape";
+const TENANT = "ktech";
 const EMAIL = "ibrahim@example.com";
 const PASSWORD = "password1";
-const MODULE = "faqs";
+const MODULE = "student-services";
 
 async function login(app: FastifyInstance): Promise<string> {
   const res = await app.inject({
@@ -72,10 +72,8 @@ describe("entries routes", () => {
   it("creates an entry and round-trips on read", async () => {
     const payload = {
       data: {
-        question_en: "What are the Cinescape opening hours?",
-        question_ar: "ما هي ساعات عمل سينسكيب؟",
-        answer_en: "Most Cinescape locations are open 11 AM to 2 AM daily.",
-        answer_ar: "معظم فروع سينسكيب تعمل من 11 صباحاً إلى 2 صباحاً يومياً.",
+        question: "ما هي ساعات دوام شؤون الطلبة؟",
+        answer: "متواجدين من الساعة 9 الصبح إلى 5 العصر.",
         category: "hours",
       },
     };
@@ -116,7 +114,7 @@ describe("entries routes", () => {
       method: "POST",
       url: `/api/v1/entries/${MODULE}`,
       headers: { authorization: `Bearer ${token}` },
-      payload: { data: { question_en: "Only one field" } },
+      payload: { data: { question: "Only one field" } },
     });
     expect(res.statusCode).toBe(400);
   });
@@ -128,10 +126,8 @@ describe("entries routes", () => {
       headers: { authorization: `Bearer ${token}` },
       payload: {
         data: {
-          question_en: "What are the opening hours?",
-          question_ar: "ما هي ساعات العمل؟",
-          answer_en: "9 to 9 daily.",
-          answer_ar: "من 9 إلى 9 يوميا.",
+          question: "متى مواعيد الدوام؟",
+          answer: "من 9 إلى 5 يوميا.",
           category: "hours",
         },
         changeSummary: "shortened copy",
@@ -164,7 +160,7 @@ describe("entries routes", () => {
       url: `/api/v1/entries/${MODULE}/${createdId}`,
       headers: { authorization: `Bearer ${token}` },
     });
-    expect(read.json().data.data.answer_en).toBe("We are open 9 to 9 daily.");
+    expect(read.json().data.data.answer).toBe("متواجدين من الساعة 9 الصبح إلى 5 العصر.");
 
     const versions = await app.inject({
       method: "GET",
