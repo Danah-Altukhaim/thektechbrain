@@ -1,6 +1,13 @@
-import { createHmac } from "crypto";
+import { createHash, createHmac } from "crypto";
 
-const JWT_SECRET = process.env.JWT_ACCESS_SECRET ?? "";
+function resolveJwtSecret(): string {
+  if (process.env.JWT_ACCESS_SECRET) return process.env.JWT_ACCESS_SECRET;
+  const dbUrl = process.env.DATABASE_URL;
+  if (dbUrl) return createHash("sha256").update(dbUrl).digest("hex");
+  return "";
+}
+
+const JWT_SECRET = resolveJwtSecret();
 
 interface JwtPayload {
   sub: string;
