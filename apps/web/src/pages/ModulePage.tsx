@@ -612,12 +612,14 @@ export function ModulePage() {
         const sampleStr = typeof sample === "string" ? sample : "";
         if (DATE_KEY_RE.test(k) || ISO_DATE_RE.test(sampleStr)) {
           emptyData[k] = now;
-        } else if (EN_RE.test(k) || AR_RE.test(k) || MSG_EN_KEYS.includes(k) || MSG_AR_KEYS.includes(k)) {
-          emptyData[k] = "";
-        } else if (TITLE_KEYS.includes(k)) {
-          emptyData[k] = "";
+        } else if (Array.isArray(sample)) {
+          emptyData[k] = [];
+        } else if (typeof sample === "number") {
+          emptyData[k] = 0;
+        } else if (typeof sample === "boolean") {
+          emptyData[k] = false;
         } else {
-          emptyData[k] = sample ?? "";
+          emptyData[k] = "";
         }
       }
     }
